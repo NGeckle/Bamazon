@@ -1,0 +1,26 @@
+{
+  "name": "bamazon",
+  "version": "1.0.0",
+  "description": "Fake Amazon",
+  "main": "bamazonCustomer.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NGeckle/Bamazon.git"
+  },
+  "keywords": [
+    "amazon",
+    "fake"
+  ],
+  "author": "Me",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/NGeckle/Bamazon/issues"
+  },
+  "homepage": "https://github.com/NGeckle/Bamazon#readme",
+  "dependencies": {
+    "mysql": "^2.15.0"
+  }
+}
