@@ -21,6 +21,7 @@
   },
   "homepage": "https://github.com/NGeckle/Bamazon#readme",
   "dependencies": {
+    "inquirer": "^5.2.0",
     "mysql": "^2.15.0"
   }
 }

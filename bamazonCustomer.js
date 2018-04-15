@@ -15,9 +15,28 @@ connection.connect(function(err) {
 });
 
 function afterConnection() {
-    connection.query("SELECT * FROM products", function(err, res) {
+    connection.query("SELECT item_id, product_name, department_name, price, stock_quantity FROM products WHERE stock_quantity > 0", function(err, res) {
         if (err) throw err;
         console.log(res);
-        connection.end();
+    });
+    inquirer.prompt([
+        {
+            name: "yesOrNo",
+            type: "confirm",
+            message: "Would you like to buy something?",
+            default: true
+        },
+        {
+            name: "itemId",
+            type: "input",
+            message: "List the item id of the product you would like to purchase."
+        },
+        {
+            name: "stock",
+            type: "input",
+            message: "How many would you like to buy?"
+        }
+    ]).then(function(answers) {
+        
     });
 }
