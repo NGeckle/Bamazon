@@ -1,4 +1,5 @@
 var mysql = require("mysql");
+var inquirer = require("inquirer");
 
 var connection = mysql.createConnection({
     host: "127.0.0.1",
@@ -15,10 +16,7 @@ connection.connect(function(err) {
 });
 
 function afterConnection() {
-    connection.query("SELECT item_id, product_name, department_name, price, stock_quantity FROM products WHERE stock_quantity > 0", function(err, res) {
-        if (err) throw err;
-        console.log(res);
-    });
+    listItems();
     inquirer.prompt([
         {
             name: "yesOrNo",
@@ -37,6 +35,20 @@ function afterConnection() {
             message: "How many would you like to buy?"
         }
     ]).then(function(answers) {
-        
+        if (answers.yesOrNo === true) {
+            connection.query(`UPDATE products SET stock_quantity = stock_quantity - ${answers.stock} WHERE item_id = ${answers.itemId};`,
+            function(err, res) {
+                if (err) throw err;
+                console.log(`Congrats! You have bought ${answers.stock} item(s)!`);
+            });
+            connection.end();
+        }
+    });
+}
+
+function listItems() {
+    connection.query("SELECT item_id, product_name, department_name, price, stock_quantity FROM products WHERE stock_quantity > 0;", function(err, res) {
+        if (err) throw err;
+        console.log(res);
     });
 }

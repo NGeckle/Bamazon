@@ -2,11 +2,6 @@ var mysql = require("mysql");
 var inquirer = require("inquirer");
 
 var arg1 = process.argv[2];
-var arg2 = process.argv[3];
-var arg3 = process.argv[4];
-var arg4 = process.argv[5];
-var arg5 = process.argv[6];
-
 
 var connection = mysql.createConnection({
     host: "127.0.0.1",
@@ -23,18 +18,25 @@ connection.connect(function(err) {
 });
 
 function calls() {
-    if (arg1 === "View Products for Sale") {
+    if (arg1 === "") {
+        menuItems();
+    }
+    if (arg1 === 'View Products for Sale') {
         products();
     }
-    if (arg1 === "View Low Inventory") {
+    if (arg1 === 'View Low Inventory') {
         inventory(); 
     }
-    if (arg1 === "Add to Inventory") {
+    if (arg1 === 'Add to Inventory') {
         addInventory();
     }
-    if (arg1 === "Add New Product") {
+    if (arg1 === 'Add New Product') {
         addProduct();
     }
+}
+
+function menuItems() {
+    console.log("Type in 'View Products for Sale', 'View Low Inventory', 'Add to Inventory', or 'Add New Product' (Including the quotations) after 'bamazonManager.js' (Not including the quotations).");
 }
 
 
@@ -71,18 +73,11 @@ function addInventory() {
         {
             name: "stockAmount",
             type: "input",
-            message: "How much stock will there be after you add stock?"
+            message: "How much stock would you like to add?"
         }
     ]).then(function(answers) {
         if (answers.yesOrNo === true) {
-            var query = connection.query(`UPDATE products SET ? WHERE ?`,
-            // var query = connection.query(`UPDATE products SET stock_quantity = stock_quantity + ${answers.stockAmount} WHERE product_name = ${answers.item}`, 
-            [{
-                stock_quantity: `${answers.stockAmount}`
-            },
-            {
-                product_name: `${answers.item}`
-            }],
+            connection.query(`UPDATE products SET stock_quantity = stock_quantity + ${answers.stockAmount} WHERE product_name = "${answers.item}";`, 
             function(err, res) {
                 if (err) throw err;
                 console.log(`${answers.item} now has ${answers.stockAmount} stock!`);
@@ -121,7 +116,7 @@ function addProduct() {
         }
     ]).then(function(answers) {
         if (answers.yesOrNo === true) {
-            connection.query(`INSERT INTO products (product_name, department_name, price, stock_quantity) VALUES ("${answers.item}", "${answers.department}", ${answers.price}, ${answers.stock})`, 
+            connection.query(`INSERT INTO products (product_name, department_name, price, stock_quantity) VALUES ("${answers.item}", "${answers.department}", ${answers.price}, ${answers.stock});`, 
             function(err, res) {
                 if (err) throw err;
                 console.log(`${answers.item} has now been added to the ${answers.department} department with the price of ${answers.price} and with ${answers.stock} in stock!`);
