@@ -44,6 +44,11 @@ function buyItem() {
             function(err, res) {
                 if (err) throw err;
             });
+            connection.query(`UPDATE departments SET total_profit = product_sales - over_head_costs;`,
+            function(err, res) {
+                if (err) throw err;
+                console.log("Updated total profit!");
+            });
             connection.end();
         }
         else {
