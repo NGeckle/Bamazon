@@ -11,12 +11,11 @@ var connection = mysql.createConnection({
 
 connection.connect(function(err) {
     if (err) throw err;
-    console.log(`Connect as id: ${connection.threadId}`);
-    afterConnection();
+    console.log(`Connected as id: ${connection.threadId}`);
+    listItems();
 });
 
-function afterConnection() {
-    listItems();
+function buyItem() {
     inquirer.prompt([
         {
             name: "yesOrNo",
@@ -41,14 +40,36 @@ function afterConnection() {
                 if (err) throw err;
                 console.log(`Congrats! You have bought ${answers.stock} item(s)!`);
             });
+            connection.query(`UPDATE products SET product_sales = (price * ${answers.stock}) + product_sales WHERE item_id = ${answers.itemId};`,
+            function(err, res) {
+                if (err) throw err;
+            });
+            connection.end();
+        }
+        else {
             connection.end();
         }
     });
 }
 
 function listItems() {
-    connection.query("SELECT item_id, product_name, department_name, price, stock_quantity FROM products WHERE stock_quantity > 0;", function(err, res) {
-        if (err) throw err;
-        console.log(res);
+    inquirer.prompt([
+        {
+            name: "confirm",
+            type: "confirm",
+            message: "Would you like to see the list of items you can buy?",
+            default: false
+        }
+    ]).then(function(answers) {
+        if (answers.confirm === true) {
+            connection.query("SELECT item_id, product_name, department_name, price, stock_quantity FROM products WHERE stock_quantity > 0;", function(err, res) {
+                if (err) throw err;
+                console.log(res);
+            });
+            buyItem();
+        }
+        else {
+            connection.end();
+        }
     });
 }

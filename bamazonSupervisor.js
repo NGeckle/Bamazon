@@ -1,8 +1,6 @@
 var mysql = require("mysql");
 var inquirer = require("inquirer");
 
-var arg1 = process.argv[2];
-
 var connection = mysql.createConnection({
     host: "127.0.0.1",
     port: 3306,
@@ -13,18 +11,42 @@ var connection = mysql.createConnection({
 
 connection.connect(function(err) {
     if (err) throw err;
-    console.log(`Connect as id: ${connection.threadId}`);
+    console.log(`Connected as id: ${connection.threadId}`);
 });
 
 function calls() {
-    if (arg1 === "") {
-        menuItems();
-    }
-    if (arg1 === "View Product Sales by Department") {
-        departmentSales(); 
-    }
-    if (arg1 === "Create New Department") {
-        createDepartment();
-    }
+    inquirer.prompt([
+        {
+            name: "confirm",
+            type: "confirm",
+            message: "Would you like to continue?",
+            default: false
+        },
+        {
+            name: "choice",
+            type: "list",
+            message: "Choose one.",
+            choices: ["View Product Sales by Department", "Create New Department"]
+        }
+    ]).then(function(answers) {
+        if (answers.confirm === true) {
+            if (answers.choice === "View Product Sales by Department") {
+                viewSales();
+            }
+            else {
+                newDepartment();
+            }
+        }
+        else {
+            connection.end();
+        }
+    });
 }
 
+function viewSales() {
+
+}
+
+function newDepartment() {
+
+}

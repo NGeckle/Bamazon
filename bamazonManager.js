@@ -1,8 +1,6 @@
 var mysql = require("mysql");
 var inquirer = require("inquirer");
 
-var arg1 = process.argv[2];
-
 var connection = mysql.createConnection({
     host: "127.0.0.1",
     port: 3306,
@@ -13,35 +11,45 @@ var connection = mysql.createConnection({
 
 connection.connect(function(err) {
     if (err) throw err;
-    console.log(`Connect as id: ${connection.threadId}`);
+    console.log(`Connected as id: ${connection.threadId}`);
     calls();
 });
 
 function calls() {
-    if (arg1 === "") {
-        menuItems();
-    }
-    if (arg1 === 'View Products for Sale') {
-        products();
-    }
-    if (arg1 === 'View Low Inventory') {
-        inventory(); 
-    }
-    if (arg1 === 'Add to Inventory') {
-        addInventory();
-    }
-    if (arg1 === 'Add New Product') {
-        addProduct();
-    }
-}
-
-function menuItems() {
-    console.log("Type in 'View Products for Sale', 'View Low Inventory', 'Add to Inventory', or 'Add New Product' (Including the quotations) after 'bamazonManager.js' (Not including the quotations).");
+    inquirer.prompt([
+        {
+            name: "confirm",
+            type: "confirm",
+            message: "Would you like to continue?",
+            default: false
+        },
+        {
+            name: "choice",
+            type: "list",
+            message: "Choose one.",
+            choices: ["View Products for Sale", "View Low Inventory", "Add to Inventory", "Add New Product"]
+        }
+    ]).then(function(answers) {
+        if (answers.confirm === true) {
+            if (answers.choice === "View Products for Sale") {
+                products();
+            }
+            else if (answers.choice === "View Low Inventory") {
+                inventory(); 
+            }
+            else if (answers.choice === "Add to Inventory") {
+                addInventory();
+            }
+            else {
+                addProduct();
+            }
+        }
+    });
 }
 
 
 function products() {
-    connection.query("SELECT product_name, department_name, price, stock_quantity FROM products", function(err, res) {
+    connection.query("SELECT item_id, product_name, department_name, price, stock_quantity FROM products", function(err, res) {
         if (err) throw err;
         console.log(res);
     });
@@ -68,7 +76,7 @@ function addInventory() {
         {
             name: "item",
             type: "input",
-            message: "Which item would you like to add more stock to?"
+            message: "List the item id of the product you would like to add stock to."
         },
         {
             name: "stockAmount",
@@ -77,10 +85,10 @@ function addInventory() {
         }
     ]).then(function(answers) {
         if (answers.yesOrNo === true) {
-            connection.query(`UPDATE products SET stock_quantity = stock_quantity + ${answers.stockAmount} WHERE product_name = "${answers.item}";`, 
+            connection.query(`UPDATE products SET stock_quantity = stock_quantity + ${answers.stockAmount} WHERE item_id = "${answers.item}";`, 
             function(err, res) {
                 if (err) throw err;
-                console.log(`${answers.item} now has ${answers.stockAmount} stock!`);
+                console.log(`You have added ${answers.stockAmount} stock!`);
             });
             connection.end();
         }
@@ -101,8 +109,9 @@ function addProduct() {
         },
         {
             name: "department",
-            type: "input",
-            message: "What department is the product a part of?"
+            type: "list",
+            message: "What department is the product a part of?",
+            choices: ["Kids", "Electronics", "Food", "Movies & TV", "Music", "Clothing", "Automotive", "Other"]
         },
         {
             name: "price",
@@ -116,11 +125,12 @@ function addProduct() {
         }
     ]).then(function(answers) {
         if (answers.yesOrNo === true) {
-            connection.query(`INSERT INTO products (product_name, department_name, price, stock_quantity) VALUES ("${answers.item}", "${answers.department}", ${answers.price}, ${answers.stock});`, 
+            connection.query(`INSERT INTO products (product_name, department_name, price, stock_quantity, product_sales) VALUES ("${answers.item}", "${answers.department}", ${answers.price}, ${answers.stock}, 30000);`, 
             function(err, res) {
                 if (err) throw err;
                 console.log(`${answers.item} has now been added to the ${answers.department} department with the price of ${answers.price} and with ${answers.stock} in stock!`);
             });
+            connection.end();
         }
     });
 }
