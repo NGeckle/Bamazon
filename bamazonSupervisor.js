@@ -14,7 +14,7 @@ var connection = mysql.createConnection({
 
 connection.connect(function(err) {
     if (err) throw err;
-    console.log(`Connected as id: ${connection.threadId}`);
+    console.log("Connected as id: " + 'connection.threadId');
     calls();
 });
 
@@ -48,12 +48,12 @@ function calls() {
 }
 
 function viewSales() {
-    connection.query(`UPDATE departments SET total_profit = product_sales - over_head_costs;`,
+    connection.query("UPDATE departments SET total_profit = product_sales - over_head_costs;",
     function(err, res) {
         if (err) throw err;
         console.log("Updated total profit!");
     });
-    connection.query(`SELECT * FROM departments`,
+    connection.query("SELECT * FROM departments",
     function(err, res) {
         table.draw(res);
     });
@@ -75,10 +75,10 @@ function newDepartment() {
         }
     ]).then(function(answers) {
         if (answers.confirm === true) {
-            connection.query(`INSERT INTO departments (department_name, over_head_costs, product_sales, total_profit) VALUES ("${answers.name}", 20000, 50000, 0);`,
+            connection.query("INSERT INTO departments (department_name, over_head_costs, product_sales, total_profit) VALUES (" + answers.name + ", 20000, 50000, 0);",
             function(err, res) {
                 if (err) throw err;
-                console.log(`A new department named ${answers.name} has been added!`);
+                console.log("A new department named " + answers.name + " has been added!");
             });
             connection.end();
         }

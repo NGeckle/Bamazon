@@ -11,7 +11,7 @@ var connection = mysql.createConnection({
 
 connection.connect(function(err) {
     if (err) throw err;
-    console.log(`Connected as id: ${connection.threadId}`);
+    console.log("Connected as id: " + connection.threadId);
     calls();
 });
 
@@ -85,10 +85,10 @@ function addInventory() {
         }
     ]).then(function(answers) {
         if (answers.yesOrNo === true) {
-            connection.query(`UPDATE products SET stock_quantity = stock_quantity + ${answers.stockAmount} WHERE item_id = "${answers.item}";`, 
+            connection.query("UPDATE products SET stock_quantity = stock_quantity + " + answers.stockAmount + " WHERE item_id = " + answers.item + ";", 
             function(err, res) {
                 if (err) throw err;
-                console.log(`You have added ${answers.stockAmount} stock!`);
+                console.log("You have added " + answers.stockAmount + " stock!");
             });
             connection.end();
         }
@@ -125,10 +125,10 @@ function addProduct() {
         }
     ]).then(function(answers) {
         if (answers.yesOrNo === true) {
-            connection.query(`INSERT INTO products (product_name, department_name, price, stock_quantity, product_sales) VALUES ("${answers.item}", "${answers.department}", ${answers.price}, ${answers.stock}, 30000);`, 
+            connection.query("INSERT INTO products (product_name, department_name, price, stock_quantity, product_sales) VALUES (" + answers.item + ", " + answers.department + ", " + answers.price + ", " + answers.stock + ", 30000);", 
             function(err, res) {
                 if (err) throw err;
-                console.log(`${answers.item} has now been added to the ${answers.department} department with the price of ${answers.price} and with ${answers.stock} in stock!`);
+                console.log(answers.item + " has now been added to the " + answers.department + " department with the price of " + answers.price + " and with " + answers.stock + " in stock!");
             });
             connection.end();
         }
